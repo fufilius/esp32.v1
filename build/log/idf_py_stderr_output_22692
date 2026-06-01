@@ -1,1 +1,0 @@
-Command: cmake -G Ninja -DPYTHON_DEPS_CHECKED=1 -DPYTHON=C:\Espressif\tools\python\v5.5.4\venv\Scripts\python.exe -DESP_PLATFORM=1 -DIDF_TARGET=esp32c3 -DCCACHE_ENABLE=0 C:\Users\Grigoryan.a.a\Documents\Codex\2026-06-01\esp32-s3-freertos-r-g-b\outputs\esp32_s3_rgb_freertos\main
