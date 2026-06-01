@@ -1,6 +1,6 @@
 # esp32.v1
 
-This folder is now the ESP-IDF project root.
+This folder is the ESP-IDF project root.
 
 The app has two FreeRTOS tasks:
 
@@ -13,7 +13,7 @@ State mapping:
 - `SYSTEM_STATE_WARNING`: blue, 2 Hz
 - `SYSTEM_STATE_CRITICAL`: red, 4 Hz
 
-Before flashing, edit `app/main.c` and set these macros to match your wiring:
+Before flashing, edit `main/main.c` and set these macros to match your wiring:
 
 ```c
 #define LED_R_GPIO GPIO_NUM_4
