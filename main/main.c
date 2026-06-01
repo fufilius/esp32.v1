@@ -7,8 +7,14 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
+#include "sdkconfig.h"
+
+#if !CONFIG_IDF_TARGET_ESP32C3
+#warning "This example is configured for ESP32-C3. Run: idf.py set-target esp32c3"
+#endif
 
 /*
+ * ESP32-C3 GPIO example.
  * Change these pins for your board/wiring.
  * If your RGB LED is active-low, set LED_ACTIVE_LEVEL to 0.
  */

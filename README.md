@@ -1,4 +1,4 @@
-# esp32.v1
+# ESP32-C3 FreeRTOS RGB blink example
 
 This folder is the ESP-IDF project root.
 
@@ -31,7 +31,8 @@ If your LED is common-anode or otherwise active-low, set:
 Build and flash:
 
 ```powershell
-idf.py set-target esp32s3
+idf.py fullclean
+idf.py set-target esp32c3
 idf.py build
 idf.py -p COMx flash monitor
 ```
