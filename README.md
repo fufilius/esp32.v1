@@ -36,3 +36,23 @@ idf.py set-target esp32c3
 idf.py build
 idf.py -p COMx flash monitor
 ```
+
+## Development environment
+
+This project keeps VS Code ESP-IDF settings in Git. Install ESP-IDF v5.5.4
+on each Windows PC to the same path:
+
+```text
+C:\esp\v5.5.4\esp-idf
+```
+
+When opening the project in VS Code, the default terminal profile runs
+`export.ps1` automatically. After opening a new terminal, `idf.py` should be
+ready to use without manually activating a Python virtual environment.
+
+The serial port can differ between PCs. If needed, update `COM5` in
+`.vscode/settings.json` or pass a port explicitly:
+
+```powershell
+idf.py -p COMx flash monitor
+```
