@@ -1,46 +1,71 @@
-# ESP32-C3 FreeRTOS RGB blink example
+# ESP32-C3 BH1750 RGB light indicator
 
-This folder is the ESP-IDF project root.
+ESP-IDF project for ESP32-C3 Super Mini. The app reads ambient light from a
+BH1750 I2C sensor and shows the current light level with an RGB LED.
 
-The app has two FreeRTOS tasks:
+## Hardware
 
-- `fake_system_state_task`: changes a fake system state every 5 seconds.
-- `rgb_blink_task`: blinks one RGB LED channel according to the current state.
+- ESP32-C3 Super Mini
+- BH1750 I2C light sensor
+- RGB LED or three separate LEDs
 
-State mapping:
+BH1750 wiring:
 
-- `SYSTEM_STATE_OK`: green, 1 Hz
-- `SYSTEM_STATE_WARNING`: blue, 2 Hz
-- `SYSTEM_STATE_CRITICAL`: red, 4 Hz
-
-Before flashing, edit `main/main.c` and set these macros to match your wiring:
-
-```c
-#define LED_R_GPIO GPIO_NUM_4
-#define LED_G_GPIO GPIO_NUM_5
-#define LED_B_GPIO GPIO_NUM_6
-#define LED_ACTIVE_LEVEL 1
+```text
+BH1750 VCC  -> 3V3
+BH1750 GND  -> GND
+BH1750 SDA  -> GPIO6
+BH1750 SCL  -> GPIO7
+BH1750 ADDR -> GND or not connected
 ```
 
-If your LED is common-anode or otherwise active-low, set:
+RGB LED wiring used by the firmware:
+
+```text
+Red   -> GPIO0
+Green -> GPIO1
+Blue  -> GPIO2
+```
+
+If the LED is common-anode or otherwise active-low, update this macro in
+`main/main.c`:
 
 ```c
 #define LED_ACTIVE_LEVEL 0
 ```
 
-Build and flash:
+## Behavior
+
+The BH1750 is polled once per second. The RGB LED blinks according to the
+measured light level:
+
+- green: enough light
+- blue: weak light
+- red: no light
+
+The firmware uses hysteresis to avoid unstable switching near threshold values:
+
+```c
+#define LIGHT_NONE_ENTER_LUX 1.0f
+#define LIGHT_NONE_EXIT_LUX 2.0f
+#define LIGHT_WEAK_ENTER_LUX 40.0f
+#define LIGHT_WEAK_EXIT_LUX 60.0f
+```
+
+## Build and flash
 
 ```powershell
-idf.py fullclean
 idf.py set-target esp32c3
 idf.py build
 idf.py -p COMx flash monitor
 ```
 
-## Development environment
+The project is configured for a 4 MB flash chip.
 
-This project keeps VS Code ESP-IDF settings in Git. Install ESP-IDF v5.5.4
-on each Windows PC to the same path:
+## Development Environment
+
+This project keeps VS Code ESP-IDF settings in Git. Install ESP-IDF v5.5.4 on
+each Windows PC to the same path:
 
 ```text
 C:\esp\v5.5.4\esp-idf
@@ -55,4 +80,16 @@ The serial port can differ between PCs. If needed, update `COM5` in
 
 ```powershell
 idf.py -p COMx flash monitor
+```
+
+## Git Workflow
+
+The `main` branch is protected. Make changes in a feature branch, push it to
+GitHub, and merge through a pull request:
+
+```powershell
+git switch -c feature/my-change
+git add .
+git commit -m "Describe change"
+git push -u origin feature/my-change
 ```
