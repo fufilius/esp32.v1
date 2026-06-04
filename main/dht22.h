@@ -1,0 +1,16 @@
+#pragma once
+
+#include <stdint.h>
+
+#include "esp_err.h"
+
+#define DHT22_SAMPLE_INTERVAL_MS 3000
+
+typedef struct {
+    float temperature_c;
+    float humidity_percent;
+    int64_t timestamp_us;
+} dht22_reading_t;
+
+void dht22_init(void);
+esp_err_t dht22_read(dht22_reading_t *reading);
