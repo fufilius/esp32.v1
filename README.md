@@ -75,6 +75,26 @@ The firmware uses hysteresis to avoid unstable switching near threshold values:
 The DHT22 is sampled every 3 seconds. Its readings are currently printed to the
 serial monitor and stored in a regular queue prepared for a future display task.
 
+## Main controller
+
+The main application logic runs in a dedicated FreeRTOS task. It switches
+between five states:
+
+- `ST_INIT`: sends the initial critical RGB state while the system starts.
+- `ST_WAIT_SENSOR_DATA`: waits for the latest BH1750 reading and drains pending
+  DHT22 readings from the regular queue.
+- `ST_PROCESS_SENSOR_DATA`: validates sensor readings and calculates the RGB
+  state from the light level.
+- `ST_UPDATE_OUTPUT`: sends the calculated RGB state to the RGB overwrite queue.
+- `ST_ERROR`: switches the RGB indicator to the critical state when sensor data
+  is invalid.
+
+Both sensor reading structures contain an `is_valid` flag. If the BH1750 or
+DHT22 reports invalid data, the controller logs the error and enters
+`ST_ERROR`. On the next loop the controller returns to waiting for fresh sensor
+data, so a temporary sensor failure can recover automatically when valid
+readings appear again.
+
 ## Build and flash
 
 ```powershell
