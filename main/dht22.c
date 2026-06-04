@@ -43,6 +43,12 @@ esp_err_t dht22_read(dht22_reading_t *reading)
         return ESP_ERR_INVALID_ARG;
     }
 
+    reading->temperature_c = 0.0f;
+    reading->humidity_percent = 0.0f;
+    reading->is_valid = false;
+    reading->error = ESP_OK;
+    reading->timestamp_us = esp_timer_get_time();
+
     uint8_t data[5] = {0};
 
     gpio_set_direction(DHT22_GPIO, GPIO_MODE_OUTPUT);
@@ -98,6 +104,8 @@ esp_err_t dht22_read(dht22_reading_t *reading)
 
     reading->humidity_percent = humidity_raw / 10.0f;
     reading->temperature_c = temperature_sign * (temperature_raw / 10.0f);
+    reading->is_valid = true;
+    reading->error = ESP_OK;
     reading->timestamp_us = esp_timer_get_time();
 
     return ESP_OK;
