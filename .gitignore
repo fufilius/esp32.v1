@@ -4,6 +4,9 @@ build/
 # ESP-IDF generated backups
 sdkconfig.old
 
+# Local project notes
+CODE_LOGIC.md
+
 # Local editor settings
 .vscode/*
 !.vscode/settings.json
