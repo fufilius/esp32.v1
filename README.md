@@ -1,12 +1,14 @@
-# ESP32-C3 BH1750 RGB light indicator
+# ESP32-C3 sensor hub and RGB light indicator
 
 ESP-IDF project for ESP32-C3 Super Mini. The app reads ambient light from a
-BH1750 I2C sensor and shows the current light level with an RGB LED.
+BH1750 I2C sensor, reads temperature and humidity from a DHT22 sensor, and
+shows the current light level with an RGB LED.
 
 ## Hardware
 
 - ESP32-C3 Super Mini
 - BH1750 I2C light sensor
+- DHT22 temperature and humidity sensor
 - RGB LED or three separate LEDs
 
 BH1750 wiring:
@@ -18,6 +20,17 @@ BH1750 SDA  -> GPIO6
 BH1750 SCL  -> GPIO7
 BH1750 ADDR -> GND or not connected
 ```
+
+DHT22 wiring:
+
+```text
+DHT22 VCC  -> 3V3
+DHT22 GND  -> GND
+DHT22 DATA -> GPIO10
+```
+
+If the DHT22 is not a ready-made module, add a pull-up resistor of about `10k`
+between DATA and `3V3`.
 
 RGB LED wiring used by the firmware:
 
@@ -36,6 +49,13 @@ If the LED is common-anode or otherwise active-low, update this macro in
 
 ## Behavior
 
+The project uses two background workers and two FreeRTOS queues:
+
+- BH1750 worker: sends the latest light state to an overwrite queue with
+  `xQueueOverwrite()`.
+- DHT22 worker: sends temperature/humidity readings to a regular queue with
+  `xQueueSend()`.
+
 The BH1750 is polled once per second. The RGB LED blinks according to the
 measured light level:
 
@@ -51,6 +71,9 @@ The firmware uses hysteresis to avoid unstable switching near threshold values:
 #define LIGHT_WEAK_ENTER_LUX 40.0f
 #define LIGHT_WEAK_EXIT_LUX 60.0f
 ```
+
+The DHT22 is sampled every 3 seconds. Its readings are currently printed to the
+serial monitor and stored in a regular queue prepared for a future display task.
 
 ## Build and flash
 

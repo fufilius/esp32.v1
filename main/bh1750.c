@@ -4,6 +4,7 @@
 #include "driver/i2c_master.h"
 #include "esp_check.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 
 #define I2C_SDA_GPIO GPIO_NUM_6
@@ -38,6 +39,22 @@ esp_err_t bh1750_read_lux(float *lux)
     const uint16_t raw = ((uint16_t)data[0] << 8) | data[1];
     *lux = raw / 1.2f;
     return ESP_OK;
+}
+
+bh1750_reading_t bh1750_read(void)
+{
+    bh1750_reading_t reading = {
+        .lux = 0.0f,
+        .is_valid = false,
+        .error = ESP_OK,
+        .timestamp_us = esp_timer_get_time(),
+    };
+
+    reading.error = bh1750_read_lux(&reading.lux);
+    reading.is_valid = reading.error == ESP_OK;
+    reading.timestamp_us = esp_timer_get_time();
+
+    return reading;
 }
 
 esp_err_t bh1750_init(void)
