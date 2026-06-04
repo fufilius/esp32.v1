@@ -75,17 +75,24 @@ The firmware uses hysteresis to avoid unstable switching near threshold values:
 The DHT22 is sampled every 3 seconds. Its readings are currently printed to the
 serial monitor and stored in a regular queue prepared for a future display task.
 
+The project also has an asynchronous IP/LwIP event handler. It listens for
+ESP-IDF `IP_EVENT` events and forwards simplified network events to the main
+controller through a FreeRTOS queue.
+
 ## Main controller
 
 The main application logic runs in a dedicated FreeRTOS task. It switches
-between five states:
+between these states:
 
 - `ST_INIT`: sends the initial critical RGB state while the system starts.
+- `ST_CONNECTING`: waits briefly for network/IP events before continuing the
+  sensor loop.
 - `ST_WAIT_SENSOR_DATA`: waits for the latest BH1750 reading and drains pending
   DHT22 readings from the regular queue.
 - `ST_PROCESS_SENSOR_DATA`: validates sensor readings and calculates the RGB
   state from the light level.
 - `ST_UPDATE_OUTPUT`: sends the calculated RGB state to the RGB overwrite queue.
+- `ST_RECOVERY`: enters network recovery mode after an IP loss event.
 - `ST_ERROR`: switches the RGB indicator to the critical state when sensor data
   is invalid.
 
@@ -94,6 +101,10 @@ DHT22 reports invalid data, the controller logs the error and enters
 `ST_ERROR`. On the next loop the controller returns to waiting for fresh sensor
 data, so a temporary sensor failure can recover automatically when valid
 readings appear again.
+
+When the network event handler receives an IP loss event, the controller moves
+to `ST_RECOVERY`, switches the RGB indicator to the critical state, waits for a
+short recovery delay, and then returns to `ST_CONNECTING`.
 
 ## Build and flash
 
