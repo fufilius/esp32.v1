@@ -4,7 +4,7 @@
   "idf.port": "COM5",
   "idf.monitorPort": "COM5",
   "idf.portWin": "COM5",
-  "idf.flashType": "JTAG",
+  "idf.flashType": "UART",
   "terminal.integrated.defaultProfile.windows": "ESP-IDF 5.5.4",
   "terminal.integrated.profiles.windows": {
     "ESP-IDF 5.5.4": {

@@ -10,9 +10,9 @@
 #include "freertos/task.h"
 #include "rgb_led.h"
 
-#define LED_R_GPIO GPIO_NUM_0
-#define LED_G_GPIO GPIO_NUM_1
-#define LED_B_GPIO GPIO_NUM_2
+#define LED_R_GPIO GPIO_NUM_25
+#define LED_G_GPIO GPIO_NUM_26
+#define LED_B_GPIO GPIO_NUM_33
 #define LED_ACTIVE_LEVEL 1
 
 #define LED_INACTIVE_LEVEL (!LED_ACTIVE_LEVEL)

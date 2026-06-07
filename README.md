@@ -1,12 +1,12 @@
-# ESP32-C3 sensor hub and RGB light indicator
+# ESP32 sensor hub and RGB light indicator
 
-ESP-IDF project for ESP32-C3 Super Mini. The app reads ambient light from a
-BH1750 I2C sensor, reads temperature and humidity from a DHT22 sensor, and
-shows the current light level with an RGB LED.
+ESP-IDF project for an ESP32 development board. The app reads ambient light
+from a BH1750 I2C sensor, reads temperature and humidity from a DHT22 sensor,
+and shows the current light level with an RGB LED.
 
 ## Hardware
 
-- ESP32-C3 Super Mini
+- ESP32 development board
 - BH1750 I2C light sensor
 - DHT22 temperature and humidity sensor
 - RGB LED or three separate LEDs
@@ -16,8 +16,8 @@ BH1750 wiring:
 ```text
 BH1750 VCC  -> 3V3
 BH1750 GND  -> GND
-BH1750 SDA  -> GPIO6
-BH1750 SCL  -> GPIO7
+BH1750 SDA  -> GPIO21
+BH1750 SCL  -> GPIO22
 BH1750 ADDR -> GND or not connected
 ```
 
@@ -26,7 +26,7 @@ DHT22 wiring:
 ```text
 DHT22 VCC  -> 3V3
 DHT22 GND  -> GND
-DHT22 DATA -> GPIO10
+DHT22 DATA -> GPIO27
 ```
 
 If the DHT22 is not a ready-made module, add a pull-up resistor of about `10k`
@@ -35,9 +35,9 @@ between DATA and `3V3`.
 RGB LED wiring used by the firmware:
 
 ```text
-Red   -> GPIO0
-Green -> GPIO1
-Blue  -> GPIO2
+Red   -> GPIO25
+Green -> GPIO26
+Blue  -> GPIO33
 ```
 
 If the LED is common-anode or otherwise active-low, update this macro in
@@ -108,8 +108,15 @@ short recovery delay, and then returns to `ST_CONNECTING`.
 
 ## Build and flash
 
+Install ESP-IDF tools for the ESP32 target before building on a new PC:
+
 ```powershell
-idf.py set-target esp32c3
+cd C:\esp\v5.5.4\esp-idf
+.\install.ps1 esp32
+```
+
+```powershell
+idf.py set-target esp32
 idf.py build
 idf.py -p COMx flash monitor
 ```

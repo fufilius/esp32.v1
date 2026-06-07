@@ -12,8 +12,8 @@
 #include "rgb_led.h"
 #include "sdkconfig.h"
 
-#if !CONFIG_IDF_TARGET_ESP32C3
-#warning "This example is configured for ESP32-C3. Run: idf.py set-target esp32c3"
+#if !CONFIG_IDF_TARGET_ESP32
+#warning "This example is configured for ESP32. Run: idf.py set-target esp32"
 #endif
 
 #define LIGHT_NONE_ENTER_LUX 1.0f

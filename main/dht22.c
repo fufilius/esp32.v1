@@ -7,7 +7,7 @@
 #include "esp_rom_sys.h"
 #include "esp_timer.h"
 
-#define DHT22_GPIO GPIO_NUM_10
+#define DHT22_GPIO GPIO_NUM_27
 #define DHT22_START_SIGNAL_US 1100
 #define DHT22_START_RELEASE_US 30
 #define DHT22_RESPONSE_TIMEOUT_US 100

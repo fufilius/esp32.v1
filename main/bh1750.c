@@ -7,8 +7,8 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 
-#define I2C_SDA_GPIO GPIO_NUM_6
-#define I2C_SCL_GPIO GPIO_NUM_7
+#define I2C_SDA_GPIO GPIO_NUM_21
+#define I2C_SCL_GPIO GPIO_NUM_22
 #define I2C_PORT I2C_NUM_0
 #define I2C_TIMEOUT_MS 1000
 
