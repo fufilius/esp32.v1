@@ -66,7 +66,7 @@ static void ip_event_handler(void *arg, esp_event_base_t event_base,
     }
 
     const network_event_type_t type = network_event_type_from_ip_event(event_id);
-    ESP_LOGI(TAG, "IP event %ld -> %s", event_id, network_event_type_name(type));
+    ESP_LOGD(TAG, "IP event %ld -> %s", event_id, network_event_type_name(type));
     queue_network_event(type, event_id);
 }
 
@@ -98,7 +98,7 @@ esp_err_t network_events_init(QueueHandle_t event_queue)
     }
 
     queue_network_event(NETWORK_EVENT_CONNECTING, -1);
-    ESP_LOGI(TAG, "IP event handler registered");
+    ESP_LOGD(TAG, "IP event handler registered");
 
     return ESP_OK;
 }
