@@ -7,7 +7,7 @@
 #include "esp_rom_sys.h"
 #include "esp_timer.h"
 
-#define DHT22_GPIO GPIO_NUM_10
+#define DHT22_GPIO GPIO_NUM_27
 #define DHT22_START_SIGNAL_US 1100
 #define DHT22_START_RELEASE_US 30
 #define DHT22_RESPONSE_TIMEOUT_US 100
@@ -34,7 +34,7 @@ void dht22_init(void)
     gpio_reset_pin(DHT22_GPIO);
     gpio_set_direction(DHT22_GPIO, GPIO_MODE_INPUT);
     gpio_set_pull_mode(DHT22_GPIO, GPIO_PULLUP_ONLY);
-    ESP_LOGI(TAG, "ready on GPIO%d", DHT22_GPIO);
+    ESP_LOGD(TAG, "ready on GPIO%d", DHT22_GPIO);
 }
 
 esp_err_t dht22_read(dht22_reading_t *reading)
