@@ -19,3 +19,10 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Local Mosquitto broker runtime/config
+mosquitto-local.conf
+mosquitto.db
+mosquitto.log
+mosquitto.err.log
+mosquitto.passwd
