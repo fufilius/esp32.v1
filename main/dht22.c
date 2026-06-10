@@ -34,7 +34,7 @@ void dht22_init(void)
     gpio_reset_pin(DHT22_GPIO);
     gpio_set_direction(DHT22_GPIO, GPIO_MODE_INPUT);
     gpio_set_pull_mode(DHT22_GPIO, GPIO_PULLUP_ONLY);
-    ESP_LOGD(TAG, "ready on GPIO%d", DHT22_GPIO);
+    ESP_LOGI(TAG, "ready on GPIO%d", DHT22_GPIO);
 }
 
 esp_err_t dht22_read(dht22_reading_t *reading)

@@ -2,8 +2,7 @@
 
 ESP-IDF project for an ESP32 development board. The app reads ambient light
 from a BH1750 I2C sensor, reads temperature and humidity from a DHT22 sensor,
-connects to Wi-Fi through a first-run setup access point, and exposes the
-latest sensor readings through a local web page.
+and shows the current light level with an RGB LED.
 
 ## Hardware
 
@@ -11,7 +10,6 @@ latest sensor readings through a local web page.
 - BH1750 I2C light sensor
 - DHT22 temperature and humidity sensor
 - RGB LED or three separate LEDs
-- Optional reset button, or the built-in BOOT button on `GPIO0`
 
 BH1750 wiring:
 
@@ -42,15 +40,6 @@ Green -> GPIO26
 Blue  -> GPIO33
 ```
 
-Manual Wi-Fi reset button:
-
-```text
-BOOT button or external button -> GPIO0 to GND
-```
-
-Hold the button for 3 seconds to clear the saved Wi-Fi credentials and reopen
-the setup access point.
-
 If the LED is common-anode or otherwise active-low, update this macro in
 `main/main.c`:
 
@@ -58,59 +47,7 @@ If the LED is common-anode or otherwise active-low, update this macro in
 #define LED_ACTIVE_LEVEL 0
 ```
 
-## Wi-Fi Setup
-
-On first boot, or after a manual Wi-Fi reset, the ESP32 starts a setup access
-point:
-
-```text
-SSID:     ESP32-Setup
-Password: configure123
-```
-
-Connect to this access point and open:
-
-```text
-http://192.168.4.1/
-```
-
-The setup page scans for nearby Wi-Fi networks and lets you choose an SSID and
-enter a password. Credentials are saved in NVS and reused on the next boot.
-
-If the saved Wi-Fi network is unavailable, the firmware retries connection,
-shows the critical LED state, and then starts the setup access point again.
-
-After the ESP32 connects to Wi-Fi, the monitor prints its assigned IP address:
-
-```text
-wifi_manager: connected, IP address: 192.168.x.x
-```
-
-Open that IP in a browser to view the sensor dashboard:
-
-```text
-http://192.168.x.x/
-```
-
-The same data is available as JSON:
-
-```text
-http://192.168.x.x/api/sensors
-```
-
-## LED Behavior
-
-The RGB LED is now used as a system status indicator:
-
-- green: Wi-Fi is connected and sensor data is valid.
-- blue: the setup access point is running.
-- red: Wi-Fi is unavailable or at least one sensor reports invalid data.
-
-Sensor errors have priority over Wi-Fi status. For example, if Wi-Fi is
-connected but the DHT22 starts timing out, the red LED state is shown until
-fresh valid sensor data arrives again.
-
-## Sensor Behavior
+## Behavior
 
 The project uses two background workers and two FreeRTOS queues:
 
@@ -119,21 +56,28 @@ The project uses two background workers and two FreeRTOS queues:
 - DHT22 worker: sends temperature/humidity readings to a regular queue with
   `xQueueSend()`.
 
-The BH1750 is polled once per second. The DHT22 is sampled every 3 seconds.
-The latest readings and error states are stored in an in-memory sensor snapshot
-used by the web dashboard and `/api/sensors`.
+The BH1750 is polled once per second. The RGB LED blinks according to the
+measured light level:
 
-The serial monitor prints compact sensor summaries only when values or validity
-state changes, for example:
+- green: enough light
+- blue: weak light
+- red: no light
 
-```text
-app: sensors: BH1750=108.33 lx, DHT22=23.4 C 43.6 %
-app: sensors: BH1750=108.33 lx, DHT22=invalid(ESP_ERR_TIMEOUT)
+The firmware uses hysteresis to avoid unstable switching near threshold values:
+
+```c
+#define LIGHT_NONE_ENTER_LUX 1.0f
+#define LIGHT_NONE_EXIT_LUX 2.0f
+#define LIGHT_WEAK_ENTER_LUX 40.0f
+#define LIGHT_WEAK_EXIT_LUX 60.0f
 ```
 
-The project also has asynchronous Wi-Fi/IP event handling. ESP-IDF Wi-Fi and
-IP events are converted into simplified network events and forwarded to the
-main controller through a FreeRTOS queue.
+The DHT22 is sampled every 3 seconds. Its readings are currently printed to the
+serial monitor and stored in a regular queue prepared for a future display task.
+
+The project also has an asynchronous IP/LwIP event handler. It listens for
+ESP-IDF `IP_EVENT` events and forwards simplified network events to the main
+controller through a FreeRTOS queue.
 
 ## Main controller
 
@@ -145,10 +89,9 @@ between these states:
   sensor loop.
 - `ST_WAIT_SENSOR_DATA`: waits for the latest BH1750 reading and drains pending
   DHT22 readings from the regular queue.
-- `ST_PROCESS_SENSOR_DATA`: validates sensor readings and logs a compact
-  summary when the values change.
-- `ST_UPDATE_OUTPUT`: keeps the RGB output aligned with the current Wi-Fi
-  status when sensor data is valid.
+- `ST_PROCESS_SENSOR_DATA`: validates sensor readings and calculates the RGB
+  state from the light level.
+- `ST_UPDATE_OUTPUT`: sends the calculated RGB state to the RGB overwrite queue.
 - `ST_RECOVERY`: enters network recovery mode after an IP loss event.
 - `ST_ERROR`: switches the RGB indicator to the critical state when sensor data
   is invalid.
