@@ -31,19 +31,19 @@ static const blink_profile_t BLINK_PROFILES[SYSTEM_STATE_COUNT] = {
         .state = SYSTEM_STATE_OK,
         .gpio = LED_G_GPIO,
         .frequency_hz = 1,
-        .name = "WIFI CONNECTED: green 1 Hz",
+        .name = "LIGHT: green 1 Hz",
     },
     [SYSTEM_STATE_WARNING] = {
         .state = SYSTEM_STATE_WARNING,
         .gpio = LED_B_GPIO,
         .frequency_hz = 2,
-        .name = "WIFI SETUP AP: blue 2 Hz",
+        .name = "WEAK LIGHT: blue 2 Hz",
     },
     [SYSTEM_STATE_CRITICAL] = {
         .state = SYSTEM_STATE_CRITICAL,
         .gpio = LED_R_GPIO,
         .frequency_hz = 4,
-        .name = "WIFI UNAVAILABLE: red 4 Hz",
+        .name = "NO LIGHT: red 4 Hz",
     },
 };
 
@@ -71,7 +71,7 @@ void rgb_blink_task(void *arg)
     system_state_t current_state = SYSTEM_STATE_CRITICAL;
     bool led_is_on = false;
 
-    ESP_LOGD(TAG, "blink profile: %s", BLINK_PROFILES[current_state].name);
+    ESP_LOGI(TAG, "blink profile: %s", BLINK_PROFILES[current_state].name);
 
     while (true) {
         const blink_profile_t *profile = &BLINK_PROFILES[current_state];
@@ -87,7 +87,7 @@ void rgb_blink_task(void *arg)
             rgb_led_off();
             led_is_on = false;
             current_state = next_state;
-            ESP_LOGD(TAG, "blink profile: %s", BLINK_PROFILES[current_state].name);
+            ESP_LOGI(TAG, "blink profile: %s", BLINK_PROFILES[current_state].name);
         }
     }
 }

@@ -5,7 +5,7 @@
 
 #include "esp_err.h"
 
-#define DHT22_SAMPLE_INTERVAL_MS 3000
+#define DHT22_SAMPLE_INTERVAL_MS 5000
 
 typedef struct {
     float temperature_c;

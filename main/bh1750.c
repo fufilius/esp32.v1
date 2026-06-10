@@ -85,7 +85,7 @@ esp_err_t bh1750_init(void)
     ESP_RETURN_ON_ERROR(bh1750_write_cmd(BH1750_CONT_H_RES_MODE), TAG,
                         "failed to start BH1750 measurement");
 
-    ESP_LOGD(TAG, "ready on I2C SDA GPIO%d, SCL GPIO%d, address 0x%02x",
+    ESP_LOGI(TAG, "ready on I2C SDA GPIO%d, SCL GPIO%d, address 0x%02x",
              I2C_SDA_GPIO, I2C_SCL_GPIO, BH1750_ADDR);
     return ESP_OK;
 }
